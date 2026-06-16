@@ -1,0 +1,192 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>AgriSetu — Login</title>
+  <link href="styles.css" rel="stylesheet" />
+
+  <!-- Login-page specific styling -->
+  <style>
+    body[data-page="login"]{
+      background:#f4fbf6;
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      min-height:100vh;
+      margin:0;
+    }
+    .center-card{
+      width:420px;
+      max-width:94%;
+      padding:28px 26px;
+      background:#ffffff;
+      border-radius:12px;
+      text-align:center;
+      color:#222;
+      box-shadow:0 14px 40px rgba(0,0,0,0.08);
+    }
+    .logo-small{
+      width:72px;
+      height:72px;
+      border-radius:10px;
+      object-fit:cover;
+      display:block;
+      margin:0 auto 12px;
+      box-shadow:0 8px 24px rgba(0,0,0,0.08);
+    }
+    .center-card input{
+      width:92%;
+      padding:14px;
+      margin:10px 0;
+      border-radius:10px;
+      border:1px solid #e2e2e2;
+      font-size:16px;
+    }
+    .center-card input:focus{
+      border-color:#1f8a4c;
+      outline:none;
+      box-shadow:0 8px 20px rgba(31,138,76,0.08);
+    }
+    .btn{
+      padding:10px 16px;
+      font-size:15px;
+      border-radius:10px;
+      cursor:pointer;
+    }
+    .btn.google-btn{
+      background:#4285F4;
+      color:#fff;
+      display:inline-flex;
+      align-items:center;
+      justify-content:center;
+      gap:8px;
+      border:none;
+      width:92%;
+    }
+    .google-icon{
+      height:18px;
+      width:18px;
+      object-fit:cover;
+    }
+    .row{
+      display:flex;
+      gap:10px;
+      justify-content:center;
+      flex-wrap:wrap;
+    }
+    .msg{
+      margin-top:10px;
+      min-height:20px;
+      font-size:14px;
+    }
+    .muted{
+      color:#666;
+      font-size:14px;
+    }
+    .forgot-btn{
+      margin-top:10px;
+      background:none;
+      border:none;
+      color:#1f8a4c;
+      font-size:14px;
+      cursor:pointer;
+      text-decoration:underline;
+    }
+    .forgot-btn:hover{
+      color:#145a32;
+    }
+  </style>
+</head>
+
+<body data-page="login">
+  <div class="center-card">
+    <img src="assets/logo.png" class="logo-small" alt="AgriSetu logo" />
+    <h1>AgriSetu</h1>
+    <p class="muted">Har Ghar Hariyali</p>
+
+    <input id="email" type="email" placeholder="Email" />
+    <input id="password" type="password" placeholder="Password" />
+
+    <div class="row">
+      <button id="btn-signin" class="btn">Sign in</button>
+      <button id="btn-signup" class="btn secondary">Register</button>
+    </div>
+
+    <div style="margin-top:14px">
+      <button id="btn-google" class="btn google-btn">
+        <img src="assets/google-icon.png" class="google-icon" alt="Google">
+        Sign in with Google
+      </button>
+    </div>
+
+    <div id="login-msg" class="msg"></div>
+
+    <!-- FORGOT PASSWORD -->
+    <button id="btn-forgot" class="forgot-btn" type="button">
+      Forgot password?
+    </button>
+
+    <small class="muted">
+      After sign in you will be redirected to the dashboard.
+    </small>
+  </div>
+
+  <!-- Firebase SDKs -->
+  <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-auth-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-database-compat.js"></script>
+
+  <!-- Your existing Firebase logic -->
+  <script src="app.js"></script>
+
+  <!-- Page Logic -->
+  <script>
+    const msgEl = document.getElementById('login-msg');
+    const setMsg = (txt, err=false)=>{
+      msgEl.textContent = txt || '';
+      msgEl.style.color = err ? '#c0392b' : '#166534';
+    };
+
+    document.getElementById('btn-signin').onclick = () => {
+      const e = email.value.trim(), p = password.value.trim();
+      if(!e||!p){ setMsg("Enter email & password",true); return; }
+      setMsg("Signing in...");
+      login(e,p);
+    };
+
+    document.getElementById('btn-signup').onclick = () => {
+      const e = email.value.trim(), p = password.value.trim();
+      if(!e||!p){ setMsg("Enter email & password",true); return; }
+      setMsg("Registering...");
+      register(e,p);
+    };
+
+    document.getElementById('btn-google').onclick = async () => {
+      const provider = new firebase.auth.GoogleAuthProvider();
+      try{
+        setMsg("Opening Google sign-in...");
+        await firebase.auth().signInWithPopup(provider);
+      }catch(err){
+        setMsg(err.message,true);
+      }
+    };
+
+    // 🔐 FORGOT PASSWORD LOGIC
+    document.getElementById('btn-forgot').onclick = async () => {
+      const e = email.value.trim();
+      if(!e){
+        setMsg("Please enter your email first",true);
+        return;
+      }
+      try{
+        setMsg("Sending password reset email...");
+        await firebase.auth().sendPasswordResetEmail(e);
+        setMsg("Password reset email sent. Check your inbox.");
+      }catch(err){
+        setMsg(err.message,true);
+      }
+    };
+  </script>
+</body>
+</html>

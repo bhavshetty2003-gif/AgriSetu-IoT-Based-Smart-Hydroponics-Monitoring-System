@@ -1,0 +1,216 @@
+/* =========================
+   Agri-Setu unified styles (About page + Dashboard)
+   Professional light-green theme
+   ========================= */
+
+:root{
+  --accent: #1f8a4c;
+  --accent-dark: #145a32;
+  --bg: #f4fbf6;
+  --card: #ffffff;
+  --muted: #6b6b6b;
+  --danger: #d62828;
+  --glass: rgba(255,255,255,0.6);
+  --max-width: 1100px;
+  --radius-lg: 14px;
+  --shadow-strong: 0 12px 40px rgba(6,70,28,0.06);
+}
+
+/* Reset & base */
+*{box-sizing:border-box}
+html,body{height:100%;margin:0;font-family:Poppins,system-ui,Arial,Helvetica,sans-serif;background:var(--bg);color:#123}
+a{color:var(--accent);text-decoration:none}
+.container{max-width:var(--max-width);margin:0 auto;padding:0 18px}
+
+/* Topbar */
+.topbar{display:flex;justify-content:space-between;align-items:center;padding:18px 22px;background:transparent}
+.brand{display:flex;align-items:center;gap:14px}
+.logo{width:64px;height:64px;border-radius:12px;object-fit:cover;box-shadow:0 8px 26px rgba(0,0,0,0.08)}
+.brand-text h1{margin:0;font-size:22px}
+.brand-text small{display:block;color:var(--muted);font-size:13px}
+
+/* Menu */
+.menu-wrap{position:relative}
+.dot-btn{background:transparent;border:none;font-size:26px;cursor:pointer;padding:8px}
+.menu{position:absolute;right:0;top:48px;background:var(--card);box-shadow:0 10px 30px rgba(0,0,0,0.08);border-radius:10px;overflow:hidden;min-width:200px}
+.menu a{display:block;padding:12px 14px;color:#222;border-bottom:1px solid #f0f0f0}
+.menu a:hover{background:#f6fff6}
+.hidden{display:none}
+
+/* Hero section */
+.about-hero{display:flex;gap:28px;align-items:flex-start;padding:20px 0}
+.hero-left{flex:1;padding-top:6px}
+.hero-right{width:320px}
+.hero-left h2{font-size:28px;margin:4px 0 10px}
+.lead{color:#234;line-height:1.6;font-size:16px}
+
+/* Trivia card */
+.trivia-card{background:var(--card);padding:16px;border-radius:12px;box-shadow:var(--shadow-strong);border-left:6px solid var(--accent)}
+.trivia-card h4{margin:0 0 6px}
+.trivia-card .muted{color:var(--muted)}
+
+/* Services */
+.services{margin-top:18px}
+.services-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:14px;margin-top:12px}
+.service{background:var(--card);padding:16px;border-radius:12px;box-shadow:0 10px 26px rgba(0,0,0,0.05)}
+.service h4{margin:0 0 8px;color:var(--accent-dark)}
+
+/* Founders */
+.founders{margin-top:26px}
+.grid-2{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:18px;margin-top:12px}
+.profile{background:var(--card);padding:14px;border-radius:12px;box-shadow:0 10px 30px rgba(0,0,0,0.05)}
+.profile-img{width:170px;height:175px;object-fit:cover;border-radius:8px}
+.role{color:var(--muted);margin:6px 0}
+.quote{margin-top:10px;padding-left:12px;border-left:4px solid var(--accent);color:#2a5230}
+
+/* Mentor */
+.mentor{margin-top:22px}
+.mentor-card{display:flex;gap:16px;align-items:center;margin-top:12px;background:var(--card);padding:14px;border-radius:12px;box-shadow:0 10px 30px rgba(0,0,0,0.05)}
+.mentor-img{width:180px;height:140px;object-fit:cover;border-radius:8px}
+.mentor-text h4{margin:0 0 6px}
+
+/* CTA */
+.cta{margin:22px 0;padding:16px;background:linear-gradient(90deg,var(--accent),var(--accent-dark));color:white;border-radius:12px;text-align:center}
+.btn{background:var(--accent);border:none;padding:10px 14px;border-radius:10px;color:white;cursor:pointer;font-weight:600}
+.btn.secondary{background:white;color:var(--accent-dark);border:1px solid rgba(31,138,76,0.12)}
+.btn.primary{background:var(--accent)}
+
+/* Contact & FAQ */
+.contact-grid{display:grid;grid-template-columns:1fr 1fr;gap:18px;margin-top:14px}
+.contact-card{background:var(--card);padding:16px;border-radius:12px;box-shadow:0 10px 26px rgba(0,0,0,0.04)}
+
+/* Footer */
+.footer{text-align:center;padding:18px;color:var(--muted);margin-top:18px}
+
+/* Dashboard specific: preserve original look (cards + dialect) */
+.cards{position:relative;display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:18px;padding:20px;max-width:1200px;margin:14px auto}
+.card{background:var(--card);border-radius:14px;padding:16px 14px;text-align:center;box-shadow:0 10px 26px rgba(0,0,0,0.06);border:3px solid rgba(31,138,76,0.08)}
+.card h3{margin:0 0 8px;font-size:17px;color:var(--accent-dark)}
+.dial{width:130px;height:130px;margin:8px auto;border-radius:50%;border:10px solid var(--accent);display:flex;align-items:center;justify-content:center;background:#f7fff9;font-size:28px;font-weight:800;color:var(--accent-dark)}
+.value-text{font-size:22px;font-weight:700;color:#222}
+.sub{margin-top:6px;font-size:12px;color:var(--muted)}
+.chart-panel{background:var(--card);padding:20px;max-width:1200px;margin:10px auto 30px;border-radius:12px;border-left:4px solid var(--accent);box-shadow:0 8px 24px rgba(0,0,0,0.04)}
+
+/* Login card (keeps consistent if used) */
+.center-card{position:relative;z-index:5;width:360px;margin:40px auto;padding:22px;background:var(--card);border-radius:12px;box-shadow:0 10px 30px rgba(0,0,0,0.08);text-align:center}
+.logo-large{width:90px;height:90px;border-radius:14px;object-fit:cover;display:block;margin:0 auto 10px}
+.center-card input{width:92%;padding:10px;margin:8px 0;border-radius:10px;border:1px solid #e6e6e6;font-size:15px}
+
+/* FAQ */
+.faq-list{margin-top:12px}
+.faq-item{background:var(--card);border-radius:8px;margin:8px 0;overflow:hidden}
+.faq-q{width:100%;text-align:left;padding:14px;border:none;background:#fbfbfb;cursor:pointer;font-weight:600}
+.faq-a{padding:12px 14px;display:none;color:#333}
+
+/* Small screens */
+@media (max-width:800px){
+  .about-hero{flex-direction:column}
+  .contact-grid{grid-template-columns:1fr}
+  .mentor-card{flex-direction:column;align-items:flex-start}
+  .logo{width:56px;height:56px}
+  .profile-img{height:180px}
+}
+
+/* Utility */
+.hidden{display:none}
+.muted{color:var(--muted)}
+
+/* ================= Crop Selection ================= */
+.crop-section{
+  max-width:1200px;
+  margin:20px auto;
+  padding:18px;
+}
+
+.crop-grid{
+  display:grid;
+  grid-template-columns:repeat(auto-fit,minmax(140px,1fr));
+  gap:16px;
+}
+
+.crop-card{
+  background:#ffffff;
+  padding:12px;
+  border-radius:12px;
+  text-align:center;
+  cursor:pointer;
+  box-shadow:0 8px 22px rgba(0,0,0,0.1);
+  transition:0.2s;
+  border:2px solid transparent;
+}
+
+.crop-card.active{
+  border-color:var(--accent);
+  transform:scale(1.05);
+}
+
+.crop-card img{
+  width:90%;
+  height:120px;
+  object-fit:cover;
+  border-radius:10px;
+}
+
+.crop-card p{
+  margin:8px 0 0;
+  font-weight:600;
+}
+
+/* ================= Ideal Parameters ================= */
+.ideal-params{
+  max-width:1200px;
+  margin:20px auto;
+  background:#fff;
+  padding:18px;
+  border-radius:14px;
+  box-shadow:0 10px 26px rgba(0,0,0,0.05);
+}
+
+.ideal-params ul{
+  list-style:none;
+  padding:0;
+}
+
+.ideal-params li{
+  padding:6px 0;
+  font-weight:500;
+}
+
+/* ================= Alerts ================= */
+.alerts{
+  max-width:1200px;
+  margin:20px auto;
+  background:#fff;
+  padding:18px;
+  border-radius:14px;
+  box-shadow:0 10px 26px rgba(0,0,0,0.05);
+}
+
+#alertBox{
+  padding:12px;
+  border-radius:10px;
+  background:#eafbea;
+  color:#1f8a4c;
+  font-weight:600;
+}
+
+.alert-danger{
+  background:#ffeaea;
+  color:#c0392b;
+}
+
+/* ================= Forgot Password Button ================= */
+.forgot-btn{
+  margin-top:10px;
+  background:none;
+  border:none;
+  color:var(--accent);
+  font-size:14px;
+  cursor:pointer;
+  text-decoration:underline;
+}
+
+.forgot-btn:hover{
+  color:var(--accent-dark);
+}
+

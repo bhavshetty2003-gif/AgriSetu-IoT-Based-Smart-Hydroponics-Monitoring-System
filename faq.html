@@ -1,0 +1,56 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8"/>
+  <meta name="viewport" content="width=device-width,initial-scale=1"/>
+  <title>FAQ — Agri-Setu</title>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body data-page="faq">
+  <header class="topbar">
+    <div class="brand">
+      <img src="assets/logo.png" alt="logo" class="logo" />
+      <div class="brand-text"><h1>Agri-Setu</h1><small>Har Ghar Hariyali</small></div>
+    </div>
+    <div class="menu-wrap">
+      <button id="menuBtnF" class="dot-btn">⋮</button>
+      <nav id="menuDropdownF" class="menu hidden" aria-hidden="true">
+        <a href="index.html">About</a>
+        <a href="login.html">Login</a>
+        <a href="contact.html">Contact</a>
+        <a href="faq.html">FAQ & Query</a>
+      </nav>
+    </div>
+  </header>
+
+  <main class="container">
+    <section class="hero"><h2>FAQ & Query</h2><p>Common questions about IoT hydroponics and Agri-Setu.</p></section>
+
+    <section class="faq-list">
+      <div class="faq-item">
+        <button class="faq-q">How do sensors connect to the dashboard?</button>
+        <div class="faq-a">They connect via an ESP32 (or similar) which writes readings to Firebase Realtime Database; the dashboard listens to that DB.</div>
+      </div>
+
+      <div class="faq-item">
+        <button class="faq-q">Do I need to code to use Agri-Setu?</button>
+        <div class="faq-a">No — the system is designed for non-technical users. We provide step-by-step setup guides.</div>
+      </div>
+
+      <div class="faq-item">
+        <button class="faq-q">Can I get alerts?</button>
+        <div class="faq-a">Yes — the dashboard supports notifications and threshold alerts. We can add SMS/email by request.</div>
+      </div>
+
+      <div class="faq-item">
+        <button class="faq-q">How much water does hydroponics use?</button>
+        <div class="faq-a">Hydroponics typically uses 70–90% less water than soil farming because water is recirculated.</div>
+      </div>
+    </section>
+  </main>
+
+  <footer class="footer"><small>© Agri-Setu</small></footer>
+  <script src="main.js"></script>
+</body>
+</html>

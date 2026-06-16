@@ -1,0 +1,66 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8"/>
+  <meta name="viewport" content="width=device-width,initial-scale=1"/>
+  <title>Contact — Agri-Setu</title>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body data-page="contact">
+  <header class="topbar">
+    <div class="brand">
+      <img src="assets/logo.png" alt="Agri-Setu logo" class="logo" />
+      <div class="brand-text"><h1>Agri-Setu</h1><small>Har Ghar Hariyali</small></div>
+    </div>
+    <div class="menu-wrap">
+      <button id="menuBtnC" class="dot-btn">⋮</button>
+      <nav id="menuDropdownC" class="menu hidden" aria-hidden="true">
+        <a href="index.html">About</a>
+        <a href="login.html">Login</a>
+        <a href="contact.html">Contact</a>
+        <a href="faq.html">FAQ & Query</a>
+      </nav>
+    </div>
+  </header>
+
+  <main class="container">
+    <section class="contact-hero">
+      <h2>Contact Us</h2>
+      <p>For partnerships, workshops, support or media — we’d love to hear from you.</p>
+    </section>
+
+    <section class="contact-grid">
+      <div class="contact-card">
+        <h4>Head Office</h4>
+        <p>Agri-Setu Labs<br/>VIVA Institute of Technology, Palghar, India</p>
+        <p>Email: <a href="mailto:hello@agrisetu.org">hello@agrisetu.org</a><br/>Phone: +91 9152598313</p>
+        <img src="assets/contact-office.jpg" alt="office" style="width:100%;border-radius:8px;margin-top:10px" />
+      </div>
+
+      <div class="contact-card">
+        <h4>Send us a message</h4>
+        <form id="contactForm">
+          <input id="cname" placeholder="Your name" required />
+          <input id="cemail" type="email" placeholder="Email" required />
+          <textarea id="cmessage" rows="6" placeholder="Your message" required></textarea>
+          <div style="display:flex;gap:8px;align-items:center">
+            <button type="submit" class="btn primary">Send</button>
+            <div id="contactMsg" class="muted"></div>
+          </div>
+        </form>
+      </div>
+    </section>
+  </main>
+
+  <footer class="footer"><small>© Agri-Setu</small></footer>
+  <script src="main.js"></script>
+  <script>
+    document.getElementById('contactForm').addEventListener('submit', (e) => {
+      e.preventDefault();
+      document.getElementById('contactMsg').innerText = 'Thanks! Your message was received (demo).';
+      e.target.reset();
+    });
+  </script>
+</body>
+</html>

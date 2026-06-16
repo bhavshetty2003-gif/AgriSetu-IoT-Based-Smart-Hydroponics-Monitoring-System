@@ -1,0 +1,403 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8"/>
+  <meta name="viewport" content="width=device-width,initial-scale=1"/>
+  <title>AgriSetu — Dashboard</title>
+
+  <!-- keep your existing stylesheet; we add a small dial-specific style block below -->
+  <link href="styles.css" rel="stylesheet" />
+
+  <!-- Chart.js -->
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+  <!-- Firebase compat -->
+  <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-auth-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-database-compat.js"></script>
+
+  <!-- DIAL / 3D STYLING (self-contained, won't conflict with your global CSS) -->
+  <style>
+    :root{
+      --accent: #1f8a4c;
+      --accent-2: #21a05a;
+      --accent-dark: #145a32;
+      --glass: rgba(255,255,255,0.18);
+    }
+
+    /* Container tweaks to ensure nice spacing */
+    body { background: linear-gradient(180deg, #f6fbf7 0%, #eef9ef 100%); }
+
+    /* Topbar & smaller logo */
+    .topbar .logo { width:46px; height:46px; border-radius:8px; box-shadow:0 8px 20px rgba(0,0,0,0.08); }
+
+    /* Cards grid keep same layout but deeper 3D look */
+    .cards { padding:28px 22px; gap:20px; }
+    .card {
+      background: linear-gradient(180deg, #ffffff, #f7fff9);
+      border-radius:18px;
+      padding:20px;
+      text-align:center;
+      border:1px solid rgba(31,138,76,0.08);
+      box-shadow: 0 18px 40px rgba(13,76,34,0.06), inset 0 2px 6px rgba(255,255,255,0.6);
+      transform-style: preserve-3d;
+      transition: transform 220ms ease;
+    }
+    .card:hover { transform: translateY(-8px) rotateX(2deg); box-shadow:0 28px 66px rgba(13,76,34,0.1); }
+
+    .card h3 { margin:0 0 10px; color:var(--accent-dark); font-size:18px; }
+
+    /* Dial: uses conic-gradient to show fill portion and soft inner plate */
+    .dial {
+      --size: 150px;
+      --thickness: 12px;
+      --fill-percent: 30; /* default */
+      width: var(--size);
+      height: var(--size);
+      border-radius: 50%;
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      margin: 8px auto;
+      position:relative;
+      font-weight:800;
+      color:var(--accent-dark);
+      background:
+        radial-gradient(circle at 30% 25%, rgba(255,255,255,0.55), rgba(255,255,255,0.06) 20%, transparent 40%),
+        conic-gradient(var(--accent) calc(var(--fill-percent) * 1%), rgba(0,0,0,0.06) calc(var(--fill-percent) * 1%));
+      box-shadow:
+        0 6px 18px rgba(0,0,0,0.12),
+        inset 0 6px 18px rgba(255,255,255,0.6);
+    }
+
+    /* inner face */
+    .dial .face {
+      width: calc(var(--size) - (var(--thickness) * 2));
+      height: calc(var(--size) - (var(--thickness) * 2));
+      border-radius:50%;
+      background: linear-gradient(180deg, #fbfffb, #e8f6ea);
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      flex-direction:column;
+      box-shadow: inset 0 6px 16px rgba(0,0,0,0.04);
+      position:relative;
+      z-index:2;
+    }
+
+    .dial .value {
+      font-size:30px;
+      color:#11421d;
+      letter-spacing:0.6px;
+    }
+    .dial .unit { font-size:12px; color:#2f5b3b; margin-top:4px; font-weight:600; }
+
+    /* subtle tick marks around dial (decorative) */
+    .dial::after{
+      content:'';
+      position:absolute;
+      inset:0;
+      border-radius:50%;
+      background: conic-gradient(rgba(255,255,255,0.06), transparent);
+      mix-blend-mode: overlay;
+      z-index:1;
+      pointer-events:none;
+    }
+
+    /* Value text below dial */
+    .value-text { font-size:20px; font-weight:700; margin-top:8px; color:#0e3d1f; }
+    .sub { margin-top:8px; color:rgba(0,0,0,0.5); font-size:12px; }
+
+    /* Chart panel - slightly 3D */
+    .chart-panel {
+      background: linear-gradient(180deg,#ffffff,#f6fff7);
+      padding:20px;
+      border-radius:12px;
+      border-left:6px solid var(--accent);
+      box-shadow:0 12px 36px rgba(0,0,0,0.06);
+    }
+
+    /* Footer keep same but lighter */
+    .footer { color:#234a2b; }
+
+    /* Responsive */
+    @media (max-width:640px){
+      .dial{ --size:120px; }
+      .value { font-size:24px; }
+    }
+  </style>
+</head>
+<body data-page="dashboard">
+  <div class="bg-overlay" aria-hidden="true" style="display:none"></div>
+
+  <header class="topbar">
+    <div class="brand">
+      <img src="assets/logo.png" alt="AgriSetu logo" class="logo" />
+      <div>
+        <h1 style="margin:0;font-size:18px">AgriSetu</h1>
+        <small style="color:#356b40">Har Ghar Hariyali</small>
+      </div>
+    </div>
+
+    <div>
+      <button id="btn-logout" class="btn">Logout</button>
+      <!-- <button id="btn-sim" class="btn secondary">Simulate Device</button> -->
+    </div>
+  </header>
+
+  <!-- ================= CROP SELECTION ================= -->
+<section class="crop-section">
+  <h2>Select Crop</h2>
+
+  <div class="crop-grid">
+    <div class="crop-card active" data-crop="lettuce">
+      <img src="assets/lettuce.jpg">
+      <p>Lettuce</p>
+    </div>
+
+    <div class="crop-card" data-crop="spinach">
+      <img src="assets/spinach.jpg">
+      <p>Spinach</p>
+    </div>
+
+    <div class="crop-card" data-crop="coriander">
+      <img src="assets/coriander.jpg">
+      <p>Coriander</p>
+    </div>
+
+    <div class="crop-card" data-crop="turmeric">
+      <img src="assets/turmeric.jpg">
+      <p>Turmeric</p>
+    </div>
+  </div>
+</section>
+
+<!-- ================= IDEAL PARAMETERS ================= -->
+<section class="ideal-params">
+  <h3>Ideal Growing Parameters</h3>
+  <ul id="idealList"></ul>
+</section>
+
+<!-- ================= ALERTS ================= -->
+<section class="alerts">
+  <h3>System Alerts</h3>
+  <div id="alertBox">All parameters normal 🌱</div>
+</section>
+
+  <main id="dashboard">
+    <section class="cards" aria-live="polite">
+      <!-- pH -->
+      <div class="card">
+        <h3>pH</h3>
+        <!-- data-min/data-max used by the dial sync script -->
+        <div class="dial" id="phDial" data-min="0" data-max="14" aria-label="pH dial">
+          <div class="face">
+            <div class="value" id="phText">--</div>
+            <div class="unit">pH</div>
+          </div>
+        </div>
+        <div class="value-text"><span id="phTextLabel">--</span></div>
+        <div class="sub">Last: <span id="ph-time">--</span></div>
+      </div>
+
+      <!-- TDS -->
+      <div class="card">
+        <h3>TDS (ppm)</h3>
+        <div class="dial" id="tdsDial" data-min="0" data-max="2000" aria-label="TDS dial">
+          <div class="face">
+            <div class="value" id="tdsText">--</div>
+            <div class="unit">ppm</div>
+          </div>
+        </div>
+        <div class="value-text"><span id="tdsTextLabel">--</span></div>
+        <div class="sub">Last: <span id="tds-time">--</span></div>
+      </div>
+
+      <!-- Temperature -->
+      <div class="card">
+        <h3>Temperature (°C)</h3>
+        <div class="dial" id="tempDial" data-min="0" data-max="50" aria-label="Temperature dial">
+          <div class="face">
+            <div class="value" id="tempText">--</div>
+            <div class="unit">°C</div>
+          </div>
+        </div>
+        <div class="value-text"><span id="tempTextLabel">--</span></div>
+        <div class="sub">Last: <span id="temp-time">--</span></div>
+      </div>
+
+      <!-- Humidity -->
+      <div class="card">
+        <h3>Humidity (%)</h3>
+        <div class="dial" id="humDial" data-min="0" data-max="100" aria-label="Humidity dial">
+          <div class="face">
+            <div class="value" id="humText">--</div>
+            <div class="unit">%</div>
+          </div>
+        </div>
+        <div class="value-text"><span id="humTextLabel">--</span></div>
+        <div class="sub">Last: <span id="hum-time">--</span></div>
+      </div>
+
+      <!-- Light -->
+      <div class="card">
+        <h3>Light (lux)</h3>
+        <div class="dial" id="lightDial" data-min="0" data-max="2000" aria-label="Light dial">
+          <div class="face">
+            <div class="value" id="lightText">--</div>
+            <div class="unit">lux</div>
+          </div>
+        </div>
+        <div class="value-text"><span id="lightTextLabel">--</span></div>
+        <div class="sub">Last: <span id="light-time">--</span></div>
+      </div>
+    </section>
+
+    <section class="chart-panel">
+  <h3>pH History</h3>
+  <canvas id="ph-chart" height="120"></canvas>
+</section>
+
+<section class="chart-panel">
+  <h3>TDS History</h3>
+  <canvas id="tds-chart" height="120"></canvas>
+</section>
+
+<section class="chart-panel">
+  <h3>Temperature History</h3>
+  <canvas id="temp-chart" height="120"></canvas>
+</section>
+
+<section class="chart-panel">
+  <h3>Humidity History</h3>
+  <canvas id="hum-chart" height="120"></canvas>
+</section>
+
+<section class="chart-panel">
+  <h3>Light Intensity History</h3>
+  <canvas id="light-chart" height="120"></canvas>
+</section>
+
+  <footer class="footer">AgriSetu — Built with ❤️</footer>
+
+  <!-- YOUR existing app logic (do not modify) -->
+  <script src="app.js"></script>
+
+  <!-- Dial-sync script: watches numeric text and updates ring fill -->
+  <script>
+    (function(){
+      // safe helper: parse number from text (returns NaN if not number)
+      const parseNum = (v) => {
+        if (v === null || v === undefined) return NaN;
+        if (typeof v === 'number') return v;
+        // remove non-numeric except dot and minus
+        const s = String(v).trim().replace(/[^\d.\-]/g,'');
+        return s === '' ? NaN : Number(s);
+      };
+
+      // compute percent between min and max
+      const percentFromRange = (value, min, max) => {
+        if (isNaN(value)) return 0;
+        const clamped = Math.max(min, Math.min(max, value));
+        return ((clamped - min) / (max - min)) * 100;
+      };
+
+      // Update dial appearance by setting CSS var --fill-percent
+      function updateDial(dialEl, numericValue){
+        const min = Number(dialEl.getAttribute('data-min') || 0);
+        const max = Number(dialEl.getAttribute('data-max') || 100);
+        const pct = percentFromRange(numericValue, min, max);
+        // set CSS custom property used in inline style background calculation
+        dialEl.style.setProperty('--fill-percent', pct.toFixed(2) + '%');
+
+        // also update the textual label below (if exists)
+        const id = dialEl.id;
+        const labelEl = document.getElementById(id.replace('Dial','TextLabel'));
+        if (labelEl) {
+          if (isNaN(numericValue)) labelEl.innerText = '--';
+          else {
+            // format values: ints as ints, floats to 2 decimals
+            const val = (Math.abs(numericValue - Math.round(numericValue)) < 0.005) ? Math.round(numericValue) : Number(numericValue).toFixed(2);
+            labelEl.innerText = val;
+          }
+        }
+      }
+
+      // find all dial elements and set up observers on their inner .face .value texts (which app.js updates)
+      const dialIds = ['phDial','tdsDial','tempDial','humDial','lightDial'];
+      const observers = [];
+
+      dialIds.forEach(id => {
+        const dial = document.getElementById(id);
+        if (!dial) return;
+
+        // set initial style var
+        dial.style.setProperty('--fill-percent', '0%');
+
+        // find numeric element inside (face -> .value). If not found fallback to associated Text element id convention (phText, etc)
+        let valueEl = dial.querySelector('.face .value') || document.getElementById(id.replace('Dial','Text'));
+        if (!valueEl) valueEl = dial.querySelector('.face');
+
+        // initial update from the .value text
+        const initialVal = parseNum(valueEl ? valueEl.innerText : null);
+        updateDial(dial, initialVal);
+
+        // create a MutationObserver to watch text changes inside the value element
+        if (valueEl && window.MutationObserver) {
+          const mo = new MutationObserver(() => {
+            const v = parseNum(valueEl.innerText);
+            updateDial(dial, v);
+          });
+          mo.observe(valueEl, { childList: true, characterData: true, subtree: true });
+          observers.push(mo);
+        }
+      });
+
+      // additionally, attempt a periodic sync (in case app.js replaces text nodes differently)
+      setInterval(() => {
+        dialIds.forEach(id => {
+          const dial = document.getElementById(id);
+          if (!dial) return;
+          // try phText etc
+          const textEl = document.getElementById(id.replace('Dial','Text')) || dial.querySelector('.face .value') || dial;
+          const v = parseNum(textEl ? textEl.innerText : null);
+          updateDial(dial, v);
+        });
+      }, 1500);
+    })();
+  </script>
+
+  <!-- Small inline style override so conic gradient uses CSS var correctly across browsers -->
+  <style>
+    /* Use CSS variable interpolation to set conic gradient stop */
+    /* Some browsers need percent numbers without 'px' etc, so the dial-sync sets --fill-percent value with '%' already. */
+    .dial {
+      /* fallback background */
+      background: conic-gradient(var(--accent) 0%, rgba(0,0,0,0.06) 0%);
+    }
+    /* Apply a dynamic background using the CSS variable */
+    .dial {
+      background:
+        radial-gradient(circle at 30% 25%, rgba(255,255,255,0.55), rgba(255,255,255,0.06) 20%, transparent 40%),
+        conic-gradient(var(--accent) var(--fill-percent, 0%), rgba(0,0,0,0.06) var(--fill-percent, 0%));
+    }
+  </style>
+
+  <!-- Attach logout & simulate handlers AFTER DOM loaded (ensures signOutUser & simulatePush exist) -->
+  <script>
+  document.addEventListener("DOMContentLoaded", () => {
+    const logoutBtn = document.getElementById("btn-logout");
+    if (logoutBtn) {
+      logoutBtn.addEventListener("click", () => {
+        console.log("Logout clicked");
+        // signOutUser is defined in app.js and signs out then onAuthStateChanged will redirect
+        signOutUser();
+      });
+    }
+
+    //const simBtn = document.getElementById("btn-sim");
+    //if (simBtn) simBtn.addEventListener("click", simulatePush);
+  });
+  </script>
+</body>
+</html>
