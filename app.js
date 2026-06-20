@@ -21,7 +21,7 @@ const historyRef = db.ref('/agrisetu/readings/history');
 // simple auth functions used by login.html
 function login(email, password) {
   document.getElementById('login-msg').innerText = 'Signing in...';
-  auth.signInWithEmailAndPassword(email, password)
+  auth.signInWithEmailAndPassword(email, password);
     .then(() => {
       // redirect handled in onAuthStateChanged
     })
